@@ -1,0 +1,24 @@
+# App-of-apps: every Application in this folder is synced by the root application.
+# Add a new Application here and Argo CD will create it in the cluster.
+
+# Cluster-level config: namespaces, quotas, limit ranges
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cluster-config
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Western-1/enterprise-aks-gitops.git
+    targetRevision: main
+    path: clusters/dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
