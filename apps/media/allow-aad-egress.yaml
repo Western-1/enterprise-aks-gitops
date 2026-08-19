@@ -1,0 +1,19 @@
+# Allows media pods to exchange the workload identity token for an
+# Entra ID (Microsoft Entra) access token (Microsoft Entra ID endpoints).
+# DNS-based allowlist via Cilium FQDN policies: only the token endpoint is reachable.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-aad-egress
+  namespace: media
+spec:
+  endpointSelector:
+    matchLabels:
+      app: media
+  egress:
+    - toFQDNs:
+        - matchName: login.microsoftonline.com
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
