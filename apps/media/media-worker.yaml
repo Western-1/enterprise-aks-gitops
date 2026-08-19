@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: media-worker
+  namespace: media
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: media
+      role: worker
+  template:
+    metadata:
+      labels:
+        app: media
+        role: worker
+    spec:
+      serviceAccountName: media-api
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: media-db-credentials
+      containers:
+        - name: media-worker
+          image: acrdevmedia.azurecr.io/media-api:1.0.0
+          command: ["python", "worker.py"]
+          env:
+            - name: REDIS_URL
+              value: redis://redis.media.svc.cluster.local:6379/0
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: media-db
+                  key: DATABASE_URL
+            - name: DBPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: media-db
+                  key: DBPASSWORD
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          volumeMounts:
+            - name: secrets-store
+              mountPath: /mnt/secrets
+              readOnly: true

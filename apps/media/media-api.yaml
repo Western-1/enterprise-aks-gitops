@@ -1,0 +1,111 @@
+# Workload Identity: this service account is federated with
+# the managed identity uami-media-dev-ne (client-id 2308ae95-bf08-486f-8dbe-56315fab638c)
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: media-api
+  namespace: media
+  annotations:
+    azure.workload.identity.io/client-id: "2308ae95-bf08-486f-8dbe-56315fab638c"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: media-api
+  namespace: media
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: media
+      role: api
+  template:
+    metadata:
+      labels:
+        app: media
+        role: api
+    spec:
+      serviceAccountName: media-api
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: media-db-credentials
+      containers:
+        - name: media-api
+          image: acrdevmedia.azurecr.io/media-api:1.0.0
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: REDIS_URL
+              value: redis://redis.media.svc.cluster.local:6379/0
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: media-db
+                  key: DATABASE_URL
+            - name: DBPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: media-db
+                  key: DBPASSWORD
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: secrets-store
+              mountPath: /mnt/secrets
+              readOnly: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: media-api
+  namespace: media
+spec:
+  selector:
+    app: media
+    role: api
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+# Public entry point for the demo API.
+# NSG rule for port 8080 is managed by Terraform (lb_ingress_ports).
+apiVersion: v1
+kind: Service
+metadata:
+  name: media-api-lb
+  namespace: media
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    app: media
+    role: api
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8000
