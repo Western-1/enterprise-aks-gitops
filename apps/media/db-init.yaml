@@ -14,7 +14,8 @@ spec:
     spec:
       restartPolicy: Never
       serviceAccountName: media-api
-      volumes:        - name: secrets-store
+      volumes:
+        - name: secrets-store
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
