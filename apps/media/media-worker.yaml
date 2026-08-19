@@ -28,7 +28,7 @@ spec:
               secretProviderClass: media-db-credentials
       containers:
         - name: media-worker
-          image: acrdevmedia.azurecr.io/media-api:1.1.0
+          image: acrdevmedia.azurecr.io/media-api:1.1.1
           command: ["python", "worker.py"]
           env:
             - name: AZURE_CLIENT_ID

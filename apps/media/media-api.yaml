@@ -38,7 +38,7 @@ spec:
               secretProviderClass: media-db-credentials
       containers:
         - name: media-api
-          image: acrdevmedia.azurecr.io/media-api:1.1.0
+          image: acrdevmedia.azurecr.io/media-api:1.1.1
           ports:
             - containerPort: 8000
               name: http
