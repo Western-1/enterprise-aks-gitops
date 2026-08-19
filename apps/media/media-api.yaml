@@ -38,7 +38,7 @@ spec:
               secretProviderClass: media-db-credentials
       containers:
         - name: media-api
-          image: acrdevmedia.azurecr.io/media-api:1.0.0
+          image: acrdevmedia.azurecr.io/media-api:1.1.0
           ports:
             - containerPort: 8000
               name: http
@@ -47,16 +47,12 @@ spec:
               value: "2308ae95-bf08-486f-8dbe-56315fab638c"
             - name: REDIS_URL
               value: redis://redis.media.svc.cluster.local:6379/0
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: media-db
-                  key: DATABASE_URL
-            - name: DBPASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: media-db
-                  key: DBPASSWORD
+            - name: DB_HOST
+              value: psql-dev-media-ne.postgres.database.azure.com
+            - name: DB_USER
+              value: uami-media-dev-ne
+            - name: DB_NAME
+              value: media
           readinessProbe:
             httpGet:
               path: /healthz

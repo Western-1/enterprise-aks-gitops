@@ -1,4 +1,5 @@
-# Creates the "media" database once (the flexible server itself is provisioned by Terraform)
+# Creates the "media" database once using the workload identity token
+# (the flexible server itself is provisioned by Terraform)
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -15,32 +16,19 @@ spec:
     spec:
       restartPolicy: Never
       serviceAccountName: media-api
-      volumes:
-        - name: secrets-store
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes:
-              secretProviderClass: media-db-credentials
       containers:
         - name: init
-          image: postgres:16-alpine
+          image: acrdevmedia.azurecr.io/media-api:1.1.0
+          command: ["python", "scripts/db-bootstrap.py"]
           env:
             - name: AZURE_CLIENT_ID
               value: "2308ae95-bf08-486f-8dbe-56315fab638c"
-          envFrom:
-            - secretRef:
-                name: media-db
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              ADMIN_URL=$(echo "$DATABASE_URL" | sed 's|/media$|/postgres|')
-              if PGPASSWORD="$DBPASSWORD" psql "$ADMIN_URL" -tAc "SELECT 1 FROM pg_database WHERE datname='media'" | grep -q 1; then
-                echo "database 'media' already exists"
-              else
-                PGPASSWORD="$DBPASSWORD" psql "$ADMIN_URL" -c "CREATE DATABASE media;"
-                echo "database 'media' created"
-              fi
+            - name: DB_HOST
+              value: psql-dev-media-ne.postgres.database.azure.com
+            - name: DB_USER
+              value: uami-media-dev-ne
+            - name: DB_NAME
+              value: media
           resources:
             requests:
               cpu: 50m
@@ -48,7 +36,3 @@ spec:
             limits:
               cpu: 200m
               memory: 128Mi
-          volumeMounts:
-            - name: secrets-store
-              mountPath: /mnt/secrets
-              readOnly: true
