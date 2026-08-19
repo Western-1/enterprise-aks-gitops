@@ -16,6 +16,7 @@ spec:
       labels:
         app: media
         role: worker
+        azure.workload.identity.io/use: "true"
     spec:
       serviceAccountName: media-api
       volumes:
