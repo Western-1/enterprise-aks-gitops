@@ -10,7 +10,7 @@ spec:
   template:
     metadata:
       labels:
-        azure.workload.identity.io/use: "true"
+        azure.workload.identity/use: "true"
     spec:
       restartPolicy: Never
       serviceAccountName: media-api
