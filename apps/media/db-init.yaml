@@ -24,6 +24,9 @@ spec:
       containers:
         - name: init
           image: postgres:16-alpine
+          env:
+            - name: AZURE_CLIENT_ID
+              value: "2308ae95-bf08-486f-8dbe-56315fab638c"
           envFrom:
             - secretRef:
                 name: media-db

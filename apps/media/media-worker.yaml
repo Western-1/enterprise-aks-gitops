@@ -31,6 +31,8 @@ spec:
           image: acrdevmedia.azurecr.io/media-api:1.0.0
           command: ["python", "worker.py"]
           env:
+            - name: AZURE_CLIENT_ID
+              value: "2308ae95-bf08-486f-8dbe-56315fab638c"
             - name: REDIS_URL
               value: redis://redis.media.svc.cluster.local:6379/0
             - name: DATABASE_URL
