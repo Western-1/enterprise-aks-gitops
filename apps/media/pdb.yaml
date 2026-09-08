@@ -1,0 +1,14 @@
+# Keeps at least one API pod during voluntary disruptions (drains, upgrades).
+# Trade-off: with HPA minReplicas 1 an eviction is blocked until a second
+# pod is up — availability first, exactly what a demo API wants.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: media-api
+  namespace: media
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: media
+      role: api

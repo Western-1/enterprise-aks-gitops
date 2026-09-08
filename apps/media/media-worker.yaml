@@ -19,13 +19,6 @@ spec:
         azure.workload.identity/use: "true"
     spec:
       serviceAccountName: media-api
-      volumes:
-        - name: secrets-store
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes:
-              secretProviderClass: media-db-credentials
       containers:
         - name: media-worker
           image: acrdevmedia.azurecr.io/media-api:1.2.0
@@ -48,7 +41,3 @@ spec:
             limits:
               cpu: 200m
               memory: 128Mi
-          volumeMounts:
-            - name: secrets-store
-              mountPath: /mnt/secrets
-              readOnly: true
