@@ -21,7 +21,7 @@ spec:
       serviceAccountName: media-api
       containers:
         - name: media-worker
-          image: acrdevmedia.azurecr.io/media-api:1.3.0
+          image: acrdevmedia.azurecr.io/media-api:sha-6113057
           command: ["python", "worker.py"]
           env:
             - name: AZURE_CLIENT_ID
