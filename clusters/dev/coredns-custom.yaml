@@ -1,0 +1,20 @@
+# AKS merges this ConfigMap into CoreDNS (coredns-custom override).
+# Split-horizon DNS: inside the cluster, the demo host resolves straight to
+# the ingress-nginx ClusterIP. Without this, Azure LB hairpin fails and
+# cert-manager HTTP-01 self-checks (plus any pod-to-public-IP traffic) time out.
+# If the ingress Service is ever recreated with a new ClusterIP, update the A record.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-custom
+  namespace: kube-system
+data:
+  media.server: |
+    media.4-210-50-215.nip.io:53 {
+      errors
+      cache 30
+      template ANY ANY .* {
+        answer "{{ .Name }} 30 IN A 10.96.40.219"
+      }
+      forward . /etc/resolv.conf
+    }
