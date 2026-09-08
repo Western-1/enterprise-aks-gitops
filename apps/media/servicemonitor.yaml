@@ -1,0 +1,19 @@
+# Scraped by the kube-prometheus-stack (see apps/monitoring).
+# Matches the ClusterIP service by its labels (not the LB service).
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: media-api
+  namespace: media
+  labels:
+    release: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: media
+      role: api
+      metrics: "true"
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s

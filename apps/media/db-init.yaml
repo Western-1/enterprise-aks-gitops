@@ -18,7 +18,7 @@ spec:
       serviceAccountName: media-api
       containers:
         - name: init
-          image: acrdevmedia.azurecr.io/media-api:1.1.4
+          image: acrdevmedia.azurecr.io/media-api:1.2.0
           command: ["python", "scripts/db-bootstrap.py"]
           env:
             - name: AZURE_CLIENT_ID
