@@ -27,3 +27,7 @@ spec:
       prune: true
     syncOptions:
       - CreateNamespace=true
+      # Server-side apply: client-side apply stores the whole object in the
+      # last-applied annotation, which overflows the 256KB limit on the
+      # prometheus-operator CRDs.
+      - ServerSideApply=true
