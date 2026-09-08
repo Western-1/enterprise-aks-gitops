@@ -1,0 +1,10 @@
+# Demo TLS without a real domain: self-signed certs issued in-cluster.
+# (Let's Encrypt via nip.io is parked: Azure LB has no hairpin, so the
+# HTTP-01 self-check can never pass, and split-horizon DNS for it turned
+# into a rabbit hole. Revisit with a real domain + DNS-01.)
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-demo
+spec:
+  selfSigned: {}

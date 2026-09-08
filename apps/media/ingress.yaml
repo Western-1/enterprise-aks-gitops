@@ -34,7 +34,7 @@ metadata:
 spec:
   secretName: media-api-tls
   issuerRef:
-    name: letsencrypt-prod
+    name: selfsigned-demo
     kind: ClusterIssuer
   dnsNames:
     - media.4-210-50-215.nip.io
