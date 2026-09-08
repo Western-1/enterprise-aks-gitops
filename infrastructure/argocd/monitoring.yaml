@@ -3,6 +3,10 @@ kind: Application
 metadata:
   name: monitoring
   namespace: argocd
+  annotations:
+    # Argo 2.14 client-side schema does not know .status.terminatingReplicas
+    # (newer K8s ReplicaSets); diff on the cluster side instead.
+    argocd.argoproj.io/compare-options: ServerSideDiff=true
   finalizers:
     - resources-finalizer.argoproj.io
 spec:
