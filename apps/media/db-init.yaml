@@ -7,6 +7,10 @@ metadata:
   namespace: media
   annotations:
     argocd.argoproj.io/sync-wave: "0"
+    # Job pod templates are immutable: replace (delete + recreate) instead of
+    # patching, so image bumps sync without manual `kubectl delete job`.
+    # The bootstrap script is idempotent ("already exists" exits 0).
+    argocd.argoproj.io/sync-options: Replace=true
 spec:
   template:
     metadata:
