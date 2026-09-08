@@ -1,19 +1,28 @@
-# Allows media pods to exchange the workload identity token for an
-# Entra ID (Microsoft Entra) access token (Microsoft Entra ID endpoints).
-# DNS-based allowlist via Cilium FQDN policies: only the token endpoint is reachable.
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
+# Allows media pods to reach the Microsoft Entra ID token endpoint
+# (login.microsoftonline.com) over HTTPS so the workload identity can be
+# exchanged for a PostgreSQL access token.
+#
+# NOTE: this deliberately allows TCP 443 to 0.0.0.0/0. Pinning the rule to
+# login.microsoftonline.com IPs is not stable (global CDN, rotating A records),
+# and the Cilium FQDN policy we tried first (CiliumNetworkPolicy/toFQDNs) did
+# not open the egress in this AKS BYOCNI setup — DNS-based learning never
+# programmed the allow rule, connections timed out. Follow-up: re-evaluate
+# FQDN policies on a newer Cilium or use egress gateways with static IPs.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
 metadata:
   name: allow-aad-egress
   namespace: media
 spec:
-  endpointSelector:
+  podSelector:
     matchLabels:
       app: media
+  policyTypes:
+    - Egress
   egress:
-    - toFQDNs:
-        - matchName: login.microsoftonline.com
-      toPorts:
-        - ports:
-            - port: "443"
-              protocol: TCP
+    - ports:
+        - port: 443
+          protocol: TCP
+      to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
