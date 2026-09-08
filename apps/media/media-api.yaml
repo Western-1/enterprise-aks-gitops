@@ -31,7 +31,7 @@ spec:
       serviceAccountName: media-api
       containers:
         - name: media-api
-          image: acrdevmedia.azurecr.io/media-api:1.2.0
+          image: acrdevmedia.azurecr.io/media-api:1.2.1
           ports:
             - containerPort: 8000
               name: http
