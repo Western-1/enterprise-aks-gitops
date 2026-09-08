@@ -6,8 +6,6 @@ kind: Ingress
 metadata:
   name: media-api
   namespace: media
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
 spec:
   ingressClassName: nginx
   tls:
