@@ -6,11 +6,11 @@ metadata:
   name: db-init
   namespace: media
   annotations:
-    argocd.argoproj.io/sync-wave: "0"
-    # Job pod templates are immutable: replace (delete + recreate) instead of
-    # patching, so image bumps sync without manual `kubectl delete job`.
-    # The bootstrap script is idempotent ("already exists" exits 0).
-    argocd.argoproj.io/sync-options: Replace=true
+    # PreSync hook: a fresh Job every sync (Job pod templates are immutable,
+    # and Argo Replace does not work for Jobs). The bootstrap script is
+    # idempotent ("already exists" exits 0), old hook Jobs are deleted.
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded, BeforeHookCreation
 spec:
   template:
     metadata:
