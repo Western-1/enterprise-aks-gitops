@@ -85,21 +85,3 @@ spec:
     - name: http
       port: 8000
       targetPort: 8000
----
-# Public entry point for the demo API.
-# NSG rule for port 8080 is managed by Terraform (lb_ingress_ports).
-apiVersion: v1
-kind: Service
-metadata:
-  name: media-api-lb
-  namespace: media
-spec:
-  type: LoadBalancer
-  externalTrafficPolicy: Local
-  selector:
-    app: media
-    role: api
-  ports:
-    - name: http
-      port: 8080
-      targetPort: 8000
