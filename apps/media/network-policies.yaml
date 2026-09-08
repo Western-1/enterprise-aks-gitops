@@ -110,6 +110,22 @@ spec:
         - protocol: TCP
           port: 8000
 ---
+# cert-manager HTTP-01 solver pods (no app label, so default-deny blocks them)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-acme-solver-ingress
+  namespace: media
+spec:
+  podSelector:
+    matchLabels:
+      acme.cert-manager.io/http01-solver: "true"
+  policyTypes: [Ingress]
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 8089
+---
 # api + worker -> OpenTelemetry collector (OTLP/HTTP) in monitoring
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
