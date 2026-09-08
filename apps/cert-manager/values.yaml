@@ -1,18 +1,4 @@
 # CRDs installed by the chart (no separate kubectl apply step).
+# Controller/webhook/cainjector run on chart defaults (modest requests).
 crds:
   enabled: true
-controller:
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-webhook:
-  resources:
-    requests:
-      cpu: 50m
-      memory: 64Mi
-cainjector:
-  resources:
-    requests:
-      cpu: 50m
-      memory: 64Mi
