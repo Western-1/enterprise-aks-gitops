@@ -1,0 +1,17 @@
+# Single replica, tuned for the small nodes. Exposes one new LB frontend
+# (~$3.5/mo) on 80/443 (already in lb_ingress_ports).
+controller:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  service:
+    externalTrafficPolicy: Local
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
