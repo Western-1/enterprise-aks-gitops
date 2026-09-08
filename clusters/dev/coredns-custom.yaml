@@ -12,6 +12,7 @@ data:
   media.server: |
     media.4-210-50-215.nip.io:53 {
       errors
+      log
       cache 30
       template ANY ANY .* {
         answer "{{ .Name }} 30 IN A 10.96.40.219"
