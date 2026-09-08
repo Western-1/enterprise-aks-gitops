@@ -1,0 +1,40 @@
+# Public HTTPS entry point for the demo API (replaces media-api-lb,
+# retired: the trial subscription caps public IPs at 3).
+# Host: media.4-210-50-215.nip.io (nip.io resolves the ingress LB IP).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: media-api
+  namespace: media
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - media.4-210-50-215.nip.io
+      secretName: media-api-tls
+  rules:
+    - host: media.4-210-50-215.nip.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: media-api
+                port:
+                  number: 8000
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: media-api-tls
+  namespace: media
+spec:
+  secretName: media-api-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - media.4-210-50-215.nip.io
