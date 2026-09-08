@@ -1,6 +1,9 @@
 # Deployment-mode collector: OTLP in (app -> 4318), OTLP out (Tempo :4317).
 mode: deployment
 replicaCount: 1
+image:
+  repository: otel/opentelemetry-collector-contrib
+  tag: "0.159.0"
 resources:
   requests:
     cpu: 100m
@@ -20,7 +23,7 @@ config:
     batch: {}
   exporters:
     otlp/tempo:
-      endpoint: tempo-tempo.monitoring.svc.cluster.local:4317
+      endpoint: tempo.monitoring.svc.cluster.local:4317
       tls:
         insecure: true
   service:
