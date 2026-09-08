@@ -1,0 +1,40 @@
+# Argo CD UI over HTTPS (replaces the plain-HTTP LoadBalancer).
+# Host: argocd.4-210-50-215.nip.io (nip.io resolves the ingress LB IP).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server
+  namespace: argocd
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "false"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - argocd.4-210-50-215.nip.io
+      secretName: argocd-tls
+  rules:
+    - host: argocd.4-210-50-215.nip.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 443
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-tls
+  namespace: argocd
+spec:
+  secretName: argocd-tls
+  issuerRef:
+    name: selfsigned-demo
+    kind: ClusterIssuer
+  dnsNames:
+    - argocd.4-210-50-215.nip.io
