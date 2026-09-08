@@ -1,0 +1,18 @@
+# Single-binary Tempo, local storage. Receivers default to OTLP;
+# the override below pins it explicitly.
+persistence:
+  enabled: true
+  size: 5Gi
+tempo:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+        http:
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi

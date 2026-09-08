@@ -32,6 +32,11 @@ grafana:
   persistence:
     enabled: true
     size: 5Gi
+  additionalDataSources:
+    - name: Tempo
+      type: tempo
+      url: http://tempo-tempo.monitoring:3100
+      access: proxy
   resources:
     requests:
       cpu: 100m

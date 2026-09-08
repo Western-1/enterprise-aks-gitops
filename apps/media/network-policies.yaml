@@ -109,3 +109,23 @@ spec:
     - ports:
         - protocol: TCP
           port: 8000
+---
+# api + worker -> OpenTelemetry collector (OTLP/HTTP) in monitoring
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-otlp-egress
+  namespace: media
+spec:
+  podSelector:
+    matchLabels:
+      app: media
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 4318
